@@ -12,27 +12,46 @@ import pygame
 from pygame import mixer
 from webscrape import webbscrape as wb
 
-# 
+# # INIT PYGAME
 pygame.font.init()
+
+# INIT MIXER
+mixer.init()
 
 # GAME WINDOW
 WIDTH, HEIGHT = 750, 750
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Emil's epic space shooter")
 
-# INFOGA BILDER
+# LOAD IMAGES
 RED_SPACE_SHIP = pygame.image.load(os.path.join("enemy1.png"))
 GREEN_SPACE_SHIP = pygame.image.load(os.path.join("enemy2.png"))
 BLUE_SPACE_SHIP = pygame.image.load(os.path.join("enemy3.png"))
 
-# SPELARE
+# PLAYER
 YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("player.png"))
 
-# PROJEKTIL
+# LASERS/PROJECTILES
 RED_LASER = pygame.image.load(os.path.join("redlaser.png"))
 GREEN_LASER = pygame.image.load(os.path.join("greenlaser.png"))
 BLUE_LASER = pygame.image.load(os.path.join("bluelaser.png"))
 YELLOW_LASER = pygame.image.load(os.path.join("bullet.png"))
+
+# SHOOTING SOUND
+shootSound = mixer.Sound(os.path.join("sound/shoot.wav"))
+shootSound.set_volume(0.2)
+
+# PLAYER HIT SOUND
+playerHitSound = mixer.Sound(os.path.join("sound/playerHit.wav"))
+playerHitSound.set_volume(0.3)
+
+# PLAYER DEATH SOUND
+playerDeathSound = mixer.Sound(os.path.join("sound/playerDie.wav"))
+playerDeathSound.set_volume(0.1)
+
+# ENEMY HIT SOUND
+enemyHitSound = mixer.Sound(os.path.join("sound/playerHit.wav"))
+enemyHitSound.set_volume(0.1)
 
 # BACKGROUND
 BG = pygame.transform.scale(pygame.image.load(os.path.join("bg.png")), (WIDTH, HEIGHT))
@@ -70,12 +89,8 @@ class Laser:
         :return: None
         :rtype: None
         """
-        # self.x = x
-        # self.y = y
-        # self.img = img
-        # self.mask = pygame.mask.from_surface(self.img)
-
-        self.x = x  # Adjust x position to the middle of the player
+        # SET ATTRIBUTES OF LASER 
+        self.x = x  
         self.y = y
         self.img = img
         self.mask = pygame.mask.from_surface(self.img)
@@ -524,7 +539,7 @@ def main():
 
         # DRAW LOST LABEL
         if lost:
-            lost_label = lost_font.render("Du dog!!", 1, (255,255,255))
+            lost_label = lost_font.render("GAME OVER", 1, (255,255,255))
             WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
 
         # UPDATE DISPLAY
@@ -571,13 +586,45 @@ def main():
             player.y -= player_vel
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 15 < HEIGHT:  # DOWN
             player.y += player_vel
-
+        
+        # SPACE: BUTTON FOR SHOOTING
         if keys[pygame.K_SPACE]:
             player.shoot()
+            shootSound.play()
         
-        # webbscrape
+        # L: BUTTON FOR WBBSCRAPING
         if keys[pygame.K_l]:
             wb()
+
+        # K: BUTTON FOR PLAYER INSTA KILL 
+        if keys[pygame.K_k]:
+            player.health = 0
+            playerDeathSound.play()
+
+        # P: INCREASE PLAYER VELOCITY
+        if keys[pygame.K_p]:
+            print("player velocity + 1")
+            player_vel += 1
+        
+        # O: DECREASE PLAYER VELOCITY
+        if keys[pygame.K_o]:
+            print("player velocity - 1")
+            player_vel -= 1
+        
+        # V: INCREASE PLAYER BULLET VELOCITY
+        if keys[pygame.K_v]:
+            print("bullet velocity + 1")
+            laser_vel += 1
+        
+        # B: DECREASE PLAYER BULLET VELOCITY
+        if keys[pygame.K_b]:
+            print("bullet velocity - 1")
+            laser_vel -= 1
+
+        # ESC: QUIT GAME
+        if keys[pygame.K_ESCAPE]:
+            print("Game closed!")
+            quit()
 
         # LAZER MOVEMENT
         for enemy in enemies[:]:
@@ -592,6 +639,7 @@ def main():
             if collide(enemy, player):
                 player.health -= 10
                 enemies.remove(enemy)
+                playerHitSound.play()
             elif enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
                 enemies.remove(enemy)
