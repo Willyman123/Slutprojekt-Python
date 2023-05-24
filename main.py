@@ -9,6 +9,7 @@
 import os
 import random
 import pygame
+import time
 from pygame import mixer
 from webscrape import webbscrape as wb
 
@@ -24,37 +25,46 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Emil's epic space shooter")
 
 # LOAD IMAGES
-RED_SPACE_SHIP = pygame.image.load(os.path.join("enemy1.png"))
-GREEN_SPACE_SHIP = pygame.image.load(os.path.join("enemy2.png"))
-BLUE_SPACE_SHIP = pygame.image.load(os.path.join("enemy3.png"))
+RED_SPACE_SHIP = pygame.image.load(os.path.join("./Images/enemy1.png"))
+GREEN_SPACE_SHIP = pygame.image.load(os.path.join("./Images/enemy2.png"))
+BLUE_SPACE_SHIP = pygame.image.load(os.path.join("./Images/enemy3.png"))
 
 # PLAYER
-YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("player.png"))
+YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("./Images/player.png"))
 
 # LASERS/PROJECTILES
-RED_LASER = pygame.image.load(os.path.join("redlaser.png"))
-GREEN_LASER = pygame.image.load(os.path.join("greenlaser.png"))
-BLUE_LASER = pygame.image.load(os.path.join("bluelaser.png"))
-YELLOW_LASER = pygame.image.load(os.path.join("bullet.png"))
+RED_LASER = pygame.image.load(os.path.join("./Images/redlaser.png"))
+GREEN_LASER = pygame.image.load(os.path.join("./Images/greenlaser.png"))
+BLUE_LASER = pygame.image.load(os.path.join("./Images/bluelaser.png"))
+YELLOW_LASER = pygame.image.load(os.path.join("./Images/bullet.png"))
+
+# BACKGROUND
+BG = pygame.transform.scale(pygame.image.load(os.path.join("./Images/bg.png")), (WIDTH, HEIGHT))
 
 # SHOOTING SOUND
 shootSound = mixer.Sound(os.path.join("sound/shoot.wav"))
-shootSound.set_volume(0.2)
+shootSound.set_volume(0.1)
 
 # PLAYER HIT SOUND
 playerHitSound = mixer.Sound(os.path.join("sound/playerHit.wav"))
-playerHitSound.set_volume(0.3)
+playerHitSound.set_volume(0.1)
 
 # PLAYER DEATH SOUND
 playerDeathSound = mixer.Sound(os.path.join("sound/playerDie.wav"))
 playerDeathSound.set_volume(0.1)
 
-# ENEMY HIT SOUND
-enemyHitSound = mixer.Sound(os.path.join("sound/playerHit.wav"))
+# ENEMY DEATH SOUND
+enemyHitSound = mixer.Sound(os.path.join("sound/enemyDie.wav"))
 enemyHitSound.set_volume(0.1)
 
-# BACKGROUND
-BG = pygame.transform.scale(pygame.image.load(os.path.join("bg.png")), (WIDTH, HEIGHT))
+# ENEMY SHOOT SOUND
+enemyShoot = mixer.Sound(os.path.join("sound/enemyShoot.wav"))
+enemyShoot.set_volume(0.08)
+
+# NEW LEVEL SOUND
+newLevel = mixer.Sound(os.path.join("sound/newLevel.wav"))
+newLevel.set_volume(0.2)
+
 
 # LAZER CLASS
 class Laser:
@@ -226,7 +236,7 @@ class Ship:
             elif laser.collision(obj):
                 obj.health -= 5
                 self.lasers.remove(laser)
-
+    
     # COOLDOWN BETWEEN SHOTS 
     def cooldown(self):
         """ Cooldown
@@ -336,6 +346,9 @@ class Player(Ship):
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
+                            enemyHitSound.play()
+                            
+                            
 
     # DRAW PLAYER
     def draw(self, window):
@@ -434,11 +447,12 @@ class Enemy(Ship):
         :rtype: None
         
         """
-        # SHOOT LAZER. LAZER COOLDOWN. LAZER 
+        # SHOOT LASER AND ADD TO LASER LIST
         if self.cool_down_counter == 0:
             laser = Laser(self.x+self.get_width()/2, self.y+self.get_height()-2, self.laser_img)
             self.lasers.append(laser)
             self.cool_down_counter = 1
+            enemyShoot.play()
 
 # SKAPAR EN MASK PÅ OBJEKT OCH KOLLAR FÖR KOLLISION
 def collide(obj1, obj2):
@@ -550,7 +564,7 @@ def main():
         # GAME RUNS AT 60 FPS
         clock.tick(FPS)
         redraw_window()
-        
+
         # LOST IF OUT OF LIVES
         if lives <= 0 or player.health <= 0:
             lost = True
@@ -567,6 +581,7 @@ def main():
         if len(enemies) == 0:
             level += 1
             wave_length += 5
+            newLevel.play()
             for i in range(wave_length):
                 enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
                 enemies.append(enemy)
@@ -586,17 +601,28 @@ def main():
             player.y -= player_vel
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 15 < HEIGHT:  # DOWN
             player.y += player_vel
-        
-        # SPACE: BUTTON FOR SHOOTING
+
         if keys[pygame.K_SPACE]:
             player.shoot()
             shootSound.play()
         
-        # L: BUTTON FOR WBBSCRAPING
+        # webbscrape
         if keys[pygame.K_l]:
             wb()
+        
+        # Button for + Health
+        # Btw, never use this
+        if keys[pygame.K_z]:
+            player.health += 10 
+            print("health + 10")
+        
+        # Button for - Health
+        # Btw, Why would you ever use this?
+        if keys[pygame.K_x]:
+            player.health -= 10
+            print("health - 10")
 
-        # K: BUTTON FOR PLAYER INSTA KILL 
+        # Kill Button
         if keys[pygame.K_k]:
             player.health = 0
             playerDeathSound.play()
