@@ -421,7 +421,7 @@ class Enemy(Ship):
         """
         # SHOOT LAZER. LAZER COOLDOWN. LAZER 
         if self.cool_down_counter == 0:
-            laser = Laser(self.x+self.get_width()/2, self.y+self.get_height()-2, self.laser_img)
+            laser = Laser(self.x + self.get_width()/2, self.y + self.get_height()-2, self.laser_img)
             self.lasers.append(laser)
             self.cool_down_counter = 1
 
