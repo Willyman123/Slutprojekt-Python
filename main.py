@@ -10,7 +10,7 @@ import os
 import random
 import pygame
 from pygame import mixer
-
+from webscrape import webbscrape as wb
 
 # 
 pygame.font.init()
@@ -571,8 +571,13 @@ def main():
             player.y -= player_vel
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 15 < HEIGHT:  # DOWN
             player.y += player_vel
+
         if keys[pygame.K_SPACE]:
             player.shoot()
+        
+        # webbscrape
+        if keys[pygame.K_l]:
+            wb()
 
         # LAZER MOVEMENT
         for enemy in enemies[:]:
