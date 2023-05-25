@@ -34,3 +34,5 @@ def webbscrape():
     # Prints the names and prices of the items
     for i in range(len(name)):
         print("Name: ", name[i] + "   price: " + price[i], "vbucks")
+        
+        
