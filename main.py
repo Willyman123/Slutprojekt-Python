@@ -13,10 +13,8 @@ import time
 from pygame import mixer
 from webscrape import webbscrape as wb
 
-# # INIT PYGAME
+# INIT PYGAME AND MIXER
 pygame.font.init()
-
-# INIT MIXER
 mixer.init()
 
 # GAME WINDOW
@@ -28,15 +26,13 @@ pygame.display.set_caption("Emil's epic space shooter")
 RED_SPACE_SHIP = pygame.image.load(os.path.join("./Images/enemy1.png"))
 GREEN_SPACE_SHIP = pygame.image.load(os.path.join("./Images/enemy2.png"))
 BLUE_SPACE_SHIP = pygame.image.load(os.path.join("./Images/enemy3.png"))
-
-# PLAYER
-YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("./Images/player.png"))
+YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("./Images/player.png")) # PLAYER
 
 # LASERS/PROJECTILES
 RED_LASER = pygame.image.load(os.path.join("./Images/redlaser.png"))
 GREEN_LASER = pygame.image.load(os.path.join("./Images/greenlaser.png"))
 BLUE_LASER = pygame.image.load(os.path.join("./Images/bluelaser.png"))
-YELLOW_LASER = pygame.image.load(os.path.join("./Images/bullet.png"))
+YELLOW_LASER = pygame.image.load(os.path.join("./Images/bullet.png")) # PLAYER
 
 # BACKGROUND
 BG = pygame.transform.scale(pygame.image.load(os.path.join("./Images/bg.png")), (WIDTH, HEIGHT))
@@ -65,7 +61,6 @@ enemyShoot.set_volume(0.08)
 newLevel = mixer.Sound(os.path.join("sound/newLevel.wav"))
 newLevel.set_volume(0.2)
 
-
 # LAZER CLASS
 class Laser:
     """
@@ -83,7 +78,6 @@ class Laser:
     :rtype: None
     
     """
-
     # INIT LASER CLASS
     def __init__(self, x, y, img):
         """ Laser class
@@ -127,7 +121,8 @@ class Laser:
         :type vel: int
         
         :return: None
-        :rtype: None"""
+        :rtype: None
+        """
         self.y += vel
 
     # CHECKS IF LASER IS OFF SCREEN
@@ -217,6 +212,8 @@ class Ship:
     # MOVES LAZER. REMOVES LAZER IF IT IS OFF SCREEN. 
     def move_lasers(self, vel, obj):
         """ Move lasers
+
+        the function moves lasers and removes the laser if it is off screen.
         
         :param vel: velocity
         :param obj: object
@@ -239,7 +236,7 @@ class Ship:
     
     # COOLDOWN BETWEEN SHOTS 
     def cooldown(self):
-        """ Cooldown
+        """ Cooldown between shots
         
         :return: None
         :rtype: None
@@ -252,7 +249,7 @@ class Ship:
 
     # SHOOT LAZER
     def shoot(self):
-        """ Shoot
+        """ Shoot laser
         
         :return: None
         :rtype: None
@@ -283,7 +280,7 @@ class Ship:
         # GET HEIGHT OF SHIP
         return self.ship_img.get_height()
 
-# SPELARE SHIP
+# PLAYER CLASS
 class Player(Ship):
     """ Player class
     
@@ -346,11 +343,9 @@ class Player(Ship):
                         objs.remove(obj)
                         if laser in self.lasers:
                             self.lasers.remove(laser)
-                            enemyHitSound.play()
+                            enemyHitSound.play() 
                             
-                            
-
-    # DRAW PLAYER
+    # DRAWS PLAYER AND HEALTHBAR
     def draw(self, window):
         """ Draw player
 
@@ -361,7 +356,7 @@ class Player(Ship):
         :return: None
         :rtype: None
         """
-        # DRAW PLAYER
+        # DRAWS PLAYER AND HEALTHBAR
         super().draw(window)
         self.healthbar(window)
 
@@ -467,7 +462,6 @@ def collide(obj1, obj2):
     :return: None
     :rtype: None
     """
-
     # OFFSET X AND Y FOR COLLISION DETECTION
     offset_x = obj2.x - obj1.x
     offset_y = obj2.y - obj1.y
@@ -475,63 +469,44 @@ def collide(obj1, obj2):
 
 # MAIN
 def main():
-    """ Main
+    """ Main function
+
+    The main function of the game.
     
     :return: None
     :rtype: None
     """
 
-    # RUN = TRUE
-    run = True
-
-    # FPS
-    FPS = 60
-
-    # CURRENT LEVEL
-    level = 0
-
-    # STARTING AMOUNT OF LIVES
-    lives = 5
     
-    # MAIN FONT
-    main_font = pygame.font.SysFont("comicsans", 50)
+    run = True # CHEKS IF GAME IS RUNNING
+    FPS = 60 # FPS OF THE GAME
+    clock = pygame.time.Clock() # CLOCK FOR FPS
+    lost = False # IF PLAYER LOSES IT CHANGES TO TRUE
+    lost_count = 0 # COUNT FOR IF PLAYER LOSES 
 
-    # LOST FONT
-    lost_font = pygame.font.SysFont("comicsans", 60)
+    main_font = pygame.font.SysFont("comicsans", 50) # MAIN FONT
+    lost_font = pygame.font.SysFont("comicsans", 60) # LOST FONT
 
-    # ENEMIES LIST 
-    enemies = []
-
-    # LENGTH OF WAVE
-    wave_length = 5
-
-    # ENEMY VELOCITY
-    enemy_vel = 1
-
-    # PLAYER VELOCITY
-    player_vel = 5
-
-    # LAZER VELOCITY
-    laser_vel = 5
-
-    # PLAYER SPAWN POSITION
-    player = Player(300, 630)
+    level = 0 # CURRENT LEVEL
+    lives = 5 # STARTING AMOUNT OF LIVES
+    enemies = [] # ENEMIES LIST 
+    wave_length = 5 # LENGTH OF WAVE
+    
+    enemy_vel = 1 # ENEMY VELOCITY
+    player_vel = 5 # PLAYER VELOCITY
+    laser_vel = 5 # LASER VELOCITY
+    player = Player(300, 630) # PLAYER SPAWN POSITION
    
-    # CLOCK
-    clock = pygame.time.Clock()
-
-    # LOST = FALSE
-    lost = False
-
-    # LOST COUNT
-    lost_count = 0
-
     # REDRAW WINDOW
     def redraw_window():
-        """ Redraw window
-        
+        """ Redraws the game window with updated objects
+
+        This function updates the window by redrawing the background, text labels for lives and level,
+        enemies, player, and a game over label if the player has lost.
+
         :return: None
         :rtype: None
+
         """
         # DRAW BACKGROUND
         WIN.blit(BG, (0,0))
@@ -676,6 +651,9 @@ def main():
 # MAIN MENU 
 def main_menu():
     """ Main menu
+
+    MAIN MENU FUNCTION THAT DISPLAYS THE MAIN MENU AND 
+    STARTS THE GAME WHEN THE PLAYER CLICKS THE MOUSE.
     
     :return: None
     :rtype: None
