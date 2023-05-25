@@ -581,43 +581,47 @@ def main():
             player.shoot()
             shootSound.play()
         
-        # webbscrape
+        # L: BUTTON FOR WEBBSCRAPE
         if keys[pygame.K_l]:
             wb()
+
+            try:
+                wb()
+                print("webbscrape done")
+            except:
+                print("webbscrape failed")
         
-        # Button for + Health
-        # Btw, never use this
+        # Z: + Health
         if keys[pygame.K_z]:
             player.health += 10 
             print("health + 10")
         
-        # Button for - Health
-        # Btw, Why would you ever use this?
+        # X: - Health
         if keys[pygame.K_x]:
             player.health -= 10
             print("health - 10")
 
-        # Kill Button
+        # K: KILL PLAYER
         if keys[pygame.K_k]:
             player.health = 0
             playerDeathSound.play()
 
-        # P: INCREASE PLAYER VELOCITY
+        # P: + PLAYER VELOCITY
         if keys[pygame.K_p]:
             print("player velocity + 1")
             player_vel += 1
         
-        # O: DECREASE PLAYER VELOCITY
+        # O: - PLAYER VELOCITY
         if keys[pygame.K_o]:
             print("player velocity - 1")
             player_vel -= 1
         
-        # V: INCREASE PLAYER BULLET VELOCITY
+        # V: + BULLET VELOCITY
         if keys[pygame.K_v]:
             print("bullet velocity + 1")
             laser_vel += 1
         
-        # B: DECREASE PLAYER BULLET VELOCITY
+        # B: - BULLET VELOCITY
         if keys[pygame.K_b]:
             print("bullet velocity - 1")
             laser_vel -= 1
