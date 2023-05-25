@@ -35,4 +35,3 @@ def webbscrape():
     for i in range(len(name)):
         print("Name: ", name[i] + "   price: " + price[i], "vbucks")
         
-        
