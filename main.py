@@ -577,14 +577,14 @@ def main():
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 15 < HEIGHT:  # DOWN
             player.y += player_vel
 
+        # SPACE: SHOOT
         if keys[pygame.K_SPACE]:
             player.shoot()
             shootSound.play()
         
-        # L: BUTTON FOR WEBBSCRAPE
+        # L: BUTTON FOR WEBBSCRAPE 
+        # See result in the terminal
         if keys[pygame.K_l]:
-            wb()
-
             try:
                 wb()
                 print("webbscrape done")
