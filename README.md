@@ -1,6 +1,6 @@
 # Slutprojekt-Python
-Webbscrapingen fungerar på vissa datorer....
-Jag har bevis på att det fungerar... På vissa datorer :) 
+The Webbscraping function and action has some minor problems still, there is a problem with getting it to work on every computer.
+I have evidence that it works, it just doesn't work on every computer. 
 
 Class Diagram Site: https://app.diagrams.net/
 
