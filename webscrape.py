@@ -1,7 +1,7 @@
 """ This program scrapes the website fnbr.co/shop and 
 prints out the name and price of the items in the shop
-Author: Victor Lora
-Date: 2020-10-15
+Author: Håkan The amazing
+Date: 02-02-1932
 """
 # IMPORTS
 from bs4 import BeautifulSoup
